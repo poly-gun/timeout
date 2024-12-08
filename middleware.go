@@ -45,7 +45,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 		{
 			value := m
 
-			slog.Log(ctx, slog.LevelDebug, "Middleware", slog.Group("context", slog.String("key", string(key)), slog.Any("value", value)))
+			slog.Log(ctx, slog.LevelDebug, "Middleware", slog.Group("context", slog.String("key", key), slog.Any("value", value)))
 
 			ctx = context.WithValue(ctx, key, value)
 
@@ -57,7 +57,7 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 			cancel()
 			e := ctx.Err()
 			if errors.Is(e, context.DeadlineExceeded) {
-				http.Error(w, "gateway-timeout", http.StatusGatewayTimeout)
+				http.Error(w, http.StatusText(http.StatusGatewayTimeout), http.StatusGatewayTimeout)
 				return
 			}
 		}()
@@ -70,6 +70,8 @@ func (m *Middleware) Handler(next http.Handler) http.Handler {
 // nil checks as all implementations first construct a [Middleware] reference using packaged default(s).
 type Variadic func(m *Middleware)
 
+// New is the package's main constructor for the middleware. Instantiates a hydrated pointer to the [Middleware] structure
+// with sane defaults. See the [Middleware] structure for additional information.
 func New() *Middleware {
 	return new(Middleware).defaults()
 }
