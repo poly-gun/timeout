@@ -65,7 +65,7 @@ func Middleware() *Middlewares {
     }
 }
 
-func Example() {
+func main() {
     middlewares := Middleware()
 
     middlewares.Add(timeout.New().Options(func(o *timeout.Middleware) { o.Timeout = time.Second * 5 }).Handler)
